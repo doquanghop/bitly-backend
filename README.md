@@ -1,5 +1,5 @@
 # URL Shortener - Bitly Clone
-
+![Image Alt Text](architecture.svg)
 ## 🚀 Introduction
 This is a **URL Shortener** system similar to Bitly, built using **Spring Boot** and **MySQL**. It allows users to generate short URLs from long ones and track analytics such as click counts and access details.
 
