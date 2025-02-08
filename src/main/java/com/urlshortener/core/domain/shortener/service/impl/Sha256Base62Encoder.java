@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Random;
 
 @Service
 public class Sha256Base62Encoder implements IUrlEncoder {
@@ -25,7 +26,10 @@ public class Sha256Base62Encoder implements IUrlEncoder {
             byte[] hash = digest.digest(text.getBytes(StandardCharsets.UTF_8));
 
             // Bước 2: Chuyển đổi hash thành chuỗi Base62
-            return encodeBase62(hash).substring(0, maxEncodedLength); // Lấy 6 ký tự đầu tiên
+            String base62 = encodeBase62(hash);
+
+            int length = getLengthEncoded();
+            return getRandomSubstring(base62, length);
         } catch (Exception e) {
             throw new RuntimeException("Error while encoding text", e);
         }
@@ -38,5 +42,15 @@ public class Sha256Base62Encoder implements IUrlEncoder {
             sb.append(BASE62.charAt(index));
         }
         return sb.toString();
+    }
+
+    private int getLengthEncoded() {
+        return (int) (Math.random() * (maxEncodedLength - minEncodedLength + 1)) + minEncodedLength;
+    }
+
+    private String getRandomSubstring(String base62, int length) {
+        Random random = new Random();
+        int start = random.nextInt(base62.length() - length); // Lấy vị trí bắt đầu ngẫu nhiên
+        return base62.substring(start, start + length);
     }
 }

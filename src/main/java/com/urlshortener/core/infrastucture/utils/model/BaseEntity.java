@@ -1,4 +1,4 @@
-package com.urlshortener.core.domain.utils.model;
+package com.urlshortener.core.infrastucture.utils.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

@@ -4,6 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data @AllArgsConstructor
-public class ShortenUrlRequest {
-    private String longUrl;
+public class CreationShortenUrlRequest {
+    private String originalUrl;
 }
