@@ -3,6 +3,7 @@ create table users
     id                   varchar(45) primary key,
     full_name            varchar(100) not null,
     avatar_url           varchar(255) not null,
+    role                 varchar(50)  not null,
     oauth2_provider_name varchar(50),
     oauth2_provider_id   varchar(50),
     email                varchar(255) unique,

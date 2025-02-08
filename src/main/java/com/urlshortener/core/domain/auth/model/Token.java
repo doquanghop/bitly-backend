@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "user_tokens")
@@ -23,9 +23,9 @@ public class Token extends BaseEntity {
     @Column(name = "access_token")
     private String accessToken;
     @Column(name = "access_token_expiry")
-    private LocalDateTime accessTokenExpiry;
+    private Date accessTokenExpiry;
     @Column(name = "refresh_token")
     private String refreshToken;
     @Column(name = "refresh_token_expiry")
-    private LocalDateTime refreshTokenExpiry;
+    private Date refreshTokenExpiry;
 }
