@@ -1,6 +1,7 @@
 package com.urlshortener.core.domain.shortener.service.impl;
 
-import com.urlshortener.core.domain.shortener.dataTransferObject.request.ShortenUrlRequest;
+import com.urlshortener.core.domain.shortener.dataTransferObject.request.CreationShortenUrlRequest;
+import com.urlshortener.core.domain.shortener.dataTransferObject.request.DeletionShortenUrlRequest;
 import com.urlshortener.core.domain.shortener.dataTransferObject.response.ShortenUrlResponse;
 import com.urlshortener.core.domain.shortener.exception.ShortenException;
 import com.urlshortener.core.domain.shortener.model.Url;
@@ -22,7 +23,7 @@ public class UrlShortenerServiceImpl implements IUrlShortenerService {
     private String clientUrl;
 
     @Override
-    public ShortenUrlResponse shortenUrl(ShortenUrlRequest request) {
+    public ShortenUrlResponse shortenUrl(CreationShortenUrlRequest request) {
         String shortedUrlCode = urlEncoder.encode(request.getOriginalUrl());
         Url newUrl = Url.builder()
                 .originalUrl(request.getOriginalUrl())
@@ -49,5 +50,12 @@ public class UrlShortenerServiceImpl implements IUrlShortenerService {
                 existingUrl.getOriginalUrl(),
                 getShortUrl(existingUrl.getShortUrlCode())
         );
+    }
+
+    @Override
+    public void deleteShortenUrl(DeletionShortenUrlRequest request) {
+        Url existingUrl = urlRepository.findByShortUrlCode(request.getShortUrlCode())
+                .orElseThrow(() -> new AppException(ShortenException.SHORT_URL_NOT_FOUND));
+        urlRepository.delete(existingUrl);
     }
 }
