@@ -8,10 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(properties = {
-        "url.short.max-size=11",
-        "url.short.min-size=7"
-})
+@SpringBootTest
 class UrlEncoderTest {
     @Autowired
     private IUrlEncoder urlEncoder;
