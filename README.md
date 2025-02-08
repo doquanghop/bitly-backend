@@ -1,7 +1,9 @@
 # URL Shortener - Bitly Clone
-
+![Architechture](architecture.svg)
 ## 🚀 Introduction
-This is a **URL Shortener** system similar to Bitly, built using **Spring Boot** and **MySQL**. It allows users to generate short URLs from long ones and track analytics such as click counts and access details.
+- This is a **URL Shortener** system similar to Bitly. It allows users to generate short URLs from long ones and track analytics such as click counts and access details.
+- 👨‍💻 Author: **Hop Do Quang** ([GitHub](https://github.com/dqh999) | [Website](https://dqhdev.com))
+- Status: ``updating``
 
 ## 🛠 Tech Stack
 - **Backend:** Java Spring Boot
@@ -9,9 +11,12 @@ This is a **URL Shortener** system similar to Bitly, built using **Spring Boot**
 - **Cache:** Redis (for quick lookups)
 - **Authentication:** JWT (for user authentication)
 - **Message Queue:** Kafka (for handling analytics and logging)
-- **Deployment:** Docker & Kubernetes
+- **Deployment:**
+   - **Container:** Docker
+   - **CI/CD:** GitHub Actions
+   - **Cloud Server:** Deployed on a Cloud Server 
 
-## 📌 Features
+## 📌 Features Main
 - ✅ Generate short URLs from long URLs
 - ✅ Redirect short URLs to the original long URLs
 - ✅ Track analytics (click count, location, user agent, etc.)
@@ -19,33 +24,10 @@ This is a **URL Shortener** system similar to Bitly, built using **Spring Boot**
 - ✅ Custom short links (user-defined slugs)
 - ✅ Expiry for short links
 
-## 📦 Installation & Setup
+All contributions are welcome! Please feel free to fork the repository and submit pull requests.
+Thank you so much! 🫶
 
-### Prerequisites:
-- Java 23
-- MySQL 8
-- Redis (optional for caching)
-- Kafka (optional for event processing)
-
-### Steps:
-1. Clone this repository:
-   ```sh
-   git clone https://github.com/dqh999/url-shortener.git
-   cd url-shortener
-   ```
-2. Configure the database in `application.properties`:
-   ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/urlshortener
-   spring.datasource.username=root
-   spring.datasource.password=yourpassword
-   ```
-3. Build and run the application:
-   ```sh
-   mvn clean install
-   mvn spring-boot:run
-   ```
-
-## 📌 API Endpoints
+## 📌 API Endpoints Sample
 
 ### 🔹 Shorten a URL
 ```http
@@ -93,10 +75,4 @@ To deploy using Docker:
 docker build -t url-shortener .
 docker run -p 8080:8080 url-shortener
 ```
-
-## 👨‍💻 Author
-- **Hop Do Quang** ([GitHub](https://github.com/dqh999) | [Website](https://dqhdev.com))
-
-## 📜 License
-This project is licensed under the MIT License.
 
