@@ -1,3 +1,6 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: UrlShortener
@@ -7,3 +10,4 @@ spring:
     url: ${MYSQL_URL:jdbc:mysql://localhost:3308/shortener_db}
     username: ${MYSQL_USERNAME:root}
     password: ${MYSQL_PASSWORD:Hop2005@}
+

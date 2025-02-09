@@ -1,5 +1,5 @@
 # URL Shortener - Bitly Clone
-![Architechture](architecture.svg)
+![Architechture](assets/architecture.svg)
 ## 🚀 Introduction
 - This is a **URL Shortener** system similar to Bitly. It allows users to generate short URLs from long ones and track analytics such as click counts and access details.
 - 👨‍💻 Author: **Hop Do Quang** ([GitHub](https://github.com/dqh999) | [Website](https://dqhdev.com))
