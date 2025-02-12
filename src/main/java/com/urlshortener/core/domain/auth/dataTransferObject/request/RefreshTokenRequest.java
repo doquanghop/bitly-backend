@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data @AllArgsConstructor
-public class RegisterRequest {
-    private String fullName;
-    private String email;
-    private String password;
+public class RefreshTokenRequest {
+    private String accessToken;
+    private String refreshToken;
 }

@@ -22,12 +22,13 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
+      - shortener-redis-data:/data
     networks:
       - shortener-network
 
 volumes:
   shortener-mysql-data:
+  shortener-redis-data:
 
 networks:
   shortener-network:

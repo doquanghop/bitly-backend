@@ -12,6 +12,7 @@ import com.urlshortener.core.infrastucture.exception.AppException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public class JwtTokenProvider {
         Date issuedAt = tokenMetadata.getIssuedAt();
         Date validity = new Date(issuedAt.getTime() + accessTokenExpiration * 1000);
 
-        JWTClaimsSet claimsSet =  new JWTClaimsSet.Builder()
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(tokenMetadata.getUserName())
                 .issuer("auth-service")
                 .issueTime(tokenMetadata.getIssuedAt())
@@ -55,23 +56,63 @@ public class JwtTokenProvider {
 
     public boolean verificationToken(String accessToken) {
         try {
-            SignedJWT signedJWT = SignedJWT.parse(accessToken);
+            SignedJWT signedJWT = parseToken(accessToken);
 
-            MACVerifier verifier = new MACVerifier(secretKey);
-            if (!signedJWT.verify(verifier)) {
-                throw new AppException(AuthException.TOKEN_SIGNATURE_INVALID);
-            }
-
-            Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-            if (expirationTime != null && expirationTime.before(new Date())) {
-                throw new AppException(AuthException.TOKEN_EXPIRED);
-            }
+            verifySignature(signedJWT);
+            JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
+            checkExpiration(jwtClaimsSet);
 
             return true;
         } catch (AppException e) {
             throw e;
         } catch (Exception e) {
             throw new AppException(AuthException.TOKEN_VERIFICATION_FAILED);
+        }
+    }
+
+    public Date extractExpiration(String accessToken) {
+        try {
+            SignedJWT signedJWT = parseToken(accessToken);
+            verifySignature(signedJWT);
+            JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
+            checkExpiration(jwtClaimsSet);
+            return jwtClaimsSet.getExpirationTime();
+        } catch (AppException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AppException(AuthException.TOKEN_VERIFICATION_FAILED);
+        }
+    }
+
+    public String extractUserName(String accessToken) {
+        try {
+            SignedJWT signedJWT = parseToken(accessToken);
+            verifySignature(signedJWT);
+            JWTClaimsSet jwtClaimsSet = signedJWT.getJWTClaimsSet();
+            checkExpiration(jwtClaimsSet);
+            return jwtClaimsSet.getSubject();
+        } catch (AppException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AppException(AuthException.TOKEN_VERIFICATION_FAILED);
+        }
+    }
+
+    private SignedJWT parseToken(String accessToken) throws ParseException {
+        return SignedJWT.parse(accessToken);
+    }
+
+    private void verifySignature(SignedJWT signedJWT) throws JOSEException {
+        MACVerifier verifier = new MACVerifier(secretKey);
+        if (!signedJWT.verify(verifier)) {
+            throw new AppException(AuthException.TOKEN_SIGNATURE_INVALID);
+        }
+    }
+
+    private void checkExpiration(JWTClaimsSet jwtClaimsSet) {
+        Date expirationTime = jwtClaimsSet.getExpirationTime();
+        if (expirationTime != null && expirationTime.before(new Date())) {
+            throw new AppException(AuthException.TOKEN_EXPIRED);
         }
     }
 }

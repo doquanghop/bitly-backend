@@ -1,5 +1,3 @@
-name: Java CI with Gradle
-
 on:
   push:
     branches:
@@ -30,6 +28,16 @@ jobs:
         ports:
           - 3308:3306
 
+      shortener-redis:
+        image: redis:latest
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        ports:
+          - 6379:6379
+
     steps:
       - uses: actions/checkout@v4
 
@@ -49,6 +57,13 @@ jobs:
         run: |
           while ! mysqladmin ping -h"127.0.0.1" --port=3308 --silent; do
             echo "Waiting for database connection..."
+            sleep 2
+          done
+
+      - name: Wait for Redis to be ready
+        run: |
+          while ! redis-cli ping; do
+            echo "Waiting for Redis connection..."
             sleep 2
           done
 
