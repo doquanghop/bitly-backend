@@ -21,12 +21,11 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	runtimeOnly("com.mysql:mysql-connector-j")
+	implementation("org.springframework.data:spring-data-redis:3.4.1")
+	implementation("redis.clients:jedis:4.4.3")
 
 	implementation("org.springframework.boot:spring-boot-starter-security")
 
-	implementation("io.jsonwebtoken:jjwt-api:0.12.6")
-	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
-	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
 	implementation("com.nimbusds:nimbus-jose-jwt:9.1")
 
