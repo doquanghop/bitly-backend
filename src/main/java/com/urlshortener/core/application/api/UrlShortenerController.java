@@ -7,6 +7,7 @@ import com.urlshortener.core.domain.shortener.dataTransferObject.response.Shorte
 import com.urlshortener.core.domain.shortener.service.IUrlShortenerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,7 @@ public class UrlShortenerController {
     private final IUrlShortenerService urlShortenerService;
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ApiResponse<ShortenUrlResponse>> handleCreateUrlShorten(@RequestBody CreationShortenUrlRequest request) {
         var res = urlShortenerService.shortenUrl(request);
         return ApiResponse.<ShortenUrlResponse>build()
