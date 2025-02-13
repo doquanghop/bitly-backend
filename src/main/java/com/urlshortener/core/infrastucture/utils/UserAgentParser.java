@@ -1,24 +1,24 @@
 package com.urlshortener.core.infrastucture.utils;
 
+import com.urlshortener.core.infrastucture.constant.BrowserTypeEnum;
+import com.urlshortener.core.infrastucture.constant.DeviceTypeEnum;
+import com.urlshortener.core.infrastucture.constant.OperatingSystemTypeEnum;
 import eu.bitwalker.useragentutils.Browser;
-import eu.bitwalker.useragentutils.DeviceType;
-import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
 
 public class UserAgentParser {
-    public static DeviceType getDeviceType(String userAgent) {
+    public static DeviceTypeEnum getDeviceType(String userAgent) {
         UserAgent userAgentObj = UserAgent.parseUserAgentString(userAgent);
-        return userAgentObj.getOperatingSystem().getDeviceType();
+        return DeviceTypeEnum.fromUserAgent(userAgentObj.getOperatingSystem().getDeviceType());
     }
-    public static String getBrowser(String userAgent) {
+    public static BrowserTypeEnum getBrowser(String userAgent) {
         UserAgent userAgentObj = UserAgent.parseUserAgentString(userAgent);
         Browser browser = userAgentObj.getBrowser();
-        return browser.getName();
+        return BrowserTypeEnum.fromUserAgent(userAgentObj.getBrowser());
     }
 
-    public static String getOperatingSystem(String userAgent) {
+    public static OperatingSystemTypeEnum getOperatingSystem(String userAgent) {
         UserAgent userAgentObj = UserAgent.parseUserAgentString(userAgent);
-        OperatingSystem os = userAgentObj.getOperatingSystem();
-        return os.getName();
+        return OperatingSystemTypeEnum.fromUserAgent(userAgentObj.getOperatingSystem());
     }
 }

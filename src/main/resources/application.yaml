@@ -19,4 +19,4 @@ spring:
       timeout: 2000
 
   kafka:
-    bootstrap-servers: 147.93.29.117:9092,147.93.29.117:9093
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:147.93.29.117:9092,147.93.29.117:9093}

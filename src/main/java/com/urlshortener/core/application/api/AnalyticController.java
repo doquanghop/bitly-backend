@@ -1,10 +1,10 @@
 package com.urlshortener.core.application.api;
 
 import com.urlshortener.core.application.dataTransferObject.ApiResponse;
-import com.urlshortener.core.domain.shortener.dataTransferObject.request.GetAnalyticsSummaryRequest;
-import com.urlshortener.core.domain.shortener.dataTransferObject.response.AdminAnalyticsSummaryResponse;
-import com.urlshortener.core.domain.shortener.dataTransferObject.response.AnalyticsSummaryResponse;
-import com.urlshortener.core.domain.shortener.service.IUrlAnalyticService;
+import com.urlshortener.core.domain.analytic.dataTransferObject.request.GetAnalyticsSummaryRequest;
+import com.urlshortener.core.domain.analytic.dataTransferObject.response.AdminURLAnalyticsResponse;
+import com.urlshortener.core.domain.analytic.dataTransferObject.response.URLAnalyticsResponse;
+import com.urlshortener.core.domain.analytic.service.IURLAnalyticService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,40 +16,40 @@ import java.time.LocalDate;
 @RequestMapping("${api.prefix}/analytic")
 @RequiredArgsConstructor
 public class AnalyticController {
-    private final IUrlAnalyticService urlAnalyticService;
+    private final IURLAnalyticService urlAnalyticService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<AnalyticsSummaryResponse>> getAnalyticsSummary(
+    public ResponseEntity<ApiResponse<URLAnalyticsResponse>> getAnalyticsSummary(
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate
     ) {
-        return ApiResponse.<AnalyticsSummaryResponse>build()
+        return ApiResponse.<URLAnalyticsResponse>build()
                 .toEntity();
     }
 
     @GetMapping("/{urlId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<AnalyticsSummaryResponse>> getAnalyticsSummaryByUrlId(
+    public ResponseEntity<ApiResponse<URLAnalyticsResponse>> getAnalyticsSummaryByUrlId(
             @PathVariable String urlId,
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate
     ) {
         var request = new GetAnalyticsSummaryRequest(urlId, startDate, endDate);
         var response = urlAnalyticService.getAnalyticsSummaryByUrlId(request);
-        return ApiResponse.<AnalyticsSummaryResponse>build()
+        return ApiResponse.<URLAnalyticsResponse>build()
                 .withData(response)
                 .toEntity();
     }
 
     @GetMapping("/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ApiResponse<AdminAnalyticsSummaryResponse>> getOverallAnalyticsSummary(
+    public ResponseEntity<ApiResponse<AdminURLAnalyticsResponse>> getOverallAnalyticsSummary(
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate
     ){
         var request = new GetAnalyticsSummaryRequest(null, startDate, endDate);
         var response = urlAnalyticService.getOverallAnalytics(request);
-        return ApiResponse.<AdminAnalyticsSummaryResponse>build()
+        return ApiResponse.<AdminURLAnalyticsResponse>build()
                 .withData(response)
                 .toEntity();
     }
