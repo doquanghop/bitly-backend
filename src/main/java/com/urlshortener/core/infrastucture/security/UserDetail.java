@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor @NoArgsConstructor
 @Getter @Setter
 public class UserDetail implements UserDetails {
+    private String id;
     private String role;
     private String username;
     private String password;

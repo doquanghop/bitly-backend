@@ -1,8 +1,8 @@
 package com.urlshortener.core.infrastucture.service;
 
-import com.urlshortener.core.domain.auth.exception.AuthException;
-import com.urlshortener.core.domain.auth.model.User;
-import com.urlshortener.core.domain.auth.repository.UserRepository;
+import com.urlshortener.core.domain.account.exception.AuthException;
+import com.urlshortener.core.domain.account.model.User;
+import com.urlshortener.core.domain.account.repository.UserRepository;
 import com.urlshortener.core.infrastucture.exception.AppException;
 import com.urlshortener.core.infrastucture.security.UserDetail;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
         return new UserDetail(
                 existingUser.getId(),
                 existingUser.getRole(),
-                existingUser.getEmail()
+                existingUser.getEmail(),
+                null
         );
     }
 }

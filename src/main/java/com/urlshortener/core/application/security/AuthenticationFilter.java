@@ -1,6 +1,6 @@
 package com.urlshortener.core.application.security;
 
-import com.urlshortener.core.domain.auth.service.IAuthService;
+import com.urlshortener.core.domain.account.service.IAccountService;
 import com.urlshortener.core.infrastucture.exception.AppException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,7 +21,7 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class AuthenticationFilter extends OncePerRequestFilter {
-    private final IAuthService authService;
+    private final IAccountService authService;
 
     @Override
     protected void doFilterInternal(

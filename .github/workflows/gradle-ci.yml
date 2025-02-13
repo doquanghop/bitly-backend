@@ -74,6 +74,9 @@ jobs:
           MYSQL_USERNAME: "root"
           MYSQL_PASSWORD: "Hop2005@"
 
+          REDIS_HOST: "127.0.0.1"
+          REDIS_PORT: "6379"
+
       - name: Run tests
         run: ./gradlew test --no-daemon
 
