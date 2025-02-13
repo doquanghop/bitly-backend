@@ -1,4 +1,4 @@
-package com.urlshortener.core.application.presentation;
+package com.urlshortener.core.application.api;
 
 import com.urlshortener.core.application.dataTransferObject.ApiResponse;
 import com.urlshortener.core.domain.auth.dataTransferObject.request.ChangePasswordRequest;

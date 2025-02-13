@@ -1,6 +1,6 @@
 package com.urlshortener.core.domain.shortener.dataTransferObject;
 
-public record CountTopDeviceAnalyticDTO(
+public record DeviceAnalyticDTO(
         String deviceType,
         long totalClicksAndScans
 ) {

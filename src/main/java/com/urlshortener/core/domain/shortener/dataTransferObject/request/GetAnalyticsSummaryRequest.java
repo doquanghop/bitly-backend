@@ -1,7 +1,10 @@
 package com.urlshortener.core.domain.shortener.dataTransferObject.request;
 
 
-public record GetAnalyticsSummary (
-        String urlId,
+import java.time.LocalDate;
 
+public record GetAnalyticsSummaryRequest(
+        String id,
+        LocalDate startDate,
+        LocalDate endDate
 ){}

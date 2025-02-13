@@ -2,25 +2,33 @@ package com.urlshortener.core.domain.shortener.service.impl;
 
 import com.urlshortener.core.domain.shortener.dataTransferObject.request.CreationShortenUrlRequest;
 import com.urlshortener.core.domain.shortener.dataTransferObject.request.DeletionShortenUrlRequest;
+import com.urlshortener.core.domain.shortener.dataTransferObject.request.GetOriginalUrlRequest;
+import com.urlshortener.core.domain.shortener.dataTransferObject.request.SaveUrlAnalyticRequest;
 import com.urlshortener.core.domain.shortener.dataTransferObject.response.ShortenUrlResponse;
 import com.urlshortener.core.domain.shortener.exception.ShortenException;
 import com.urlshortener.core.domain.shortener.model.Url;
 import com.urlshortener.core.domain.shortener.repository.UrlRepository;
-import com.urlshortener.core.domain.shortener.service.IUrlEncoder;
 import com.urlshortener.core.domain.shortener.service.IUrlShortenerService;
+import com.urlshortener.core.domain.shortener.service.UrlEncoderService;
 import com.urlshortener.core.infrastucture.exception.AppException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class UrlShortenerServiceImpl implements IUrlShortenerService {
-    private final IUrlEncoder urlEncoder;
+    private final UrlEncoderService urlEncoder;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final UrlRepository urlRepository;
 
     @Value("${client.url}")
     private String clientUrl;
+    @Value("${kafka.topic.url.analytic.visited}")
+    private String URL_ANALYTIC_VISITED_TOPIC;
 
     @Override
     public ShortenUrlResponse shortenUrl(CreationShortenUrlRequest request) {
@@ -43,9 +51,16 @@ public class UrlShortenerServiceImpl implements IUrlShortenerService {
     }
 
     @Override
-    public ShortenUrlResponse decodeUrl(String shortCode) {
-        Url existingUrl = urlRepository.findByShortUrlCode(shortCode)
+    public ShortenUrlResponse decodeUrl(GetOriginalUrlRequest request) {
+        Url existingUrl = urlRepository.findByShortUrlCode(request.getShortUrlCode())
                 .orElseThrow(() -> new AppException(ShortenException.SHORT_URL_NOT_FOUND));
+
+        var saveUrlAnalytic = new SaveUrlAnalyticRequest(
+                request.getHttpServletRequest(),
+                existingUrl.getId(),
+                LocalDateTime.now()
+        );
+        kafkaTemplate.send(URL_ANALYTIC_VISITED_TOPIC, saveUrlAnalytic);
         return new ShortenUrlResponse(
                 existingUrl.getOriginalUrl(),
                 getShortUrl(existingUrl.getShortUrlCode())

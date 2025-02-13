@@ -1,7 +1,6 @@
-package com.airline.booking.infrastructure.config;
+package com.urlshortener.core.infrastucture.config;
 
 
-import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -14,9 +13,11 @@ import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")

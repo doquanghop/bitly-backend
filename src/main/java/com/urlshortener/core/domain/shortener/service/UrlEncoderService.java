@@ -1,6 +1,5 @@
-package com.urlshortener.core.domain.shortener.service.impl;
+package com.urlshortener.core.domain.shortener.service;
 
-import com.urlshortener.core.domain.shortener.service.IUrlEncoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +8,7 @@ import java.security.MessageDigest;
 import java.util.Random;
 
 @Service
-public class Sha256Base62Encoder implements IUrlEncoder {
+public class UrlEncoderService  {
 
     private static final String BASE62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -18,7 +17,6 @@ public class Sha256Base62Encoder implements IUrlEncoder {
     @Value("${url.short.min-size}")
     private int minEncodedLength;
 
-    @Override
     public String encode(String text) {
         try {
             // Bước 1: Băm URL với SHA-256

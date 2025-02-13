@@ -1,4 +1,7 @@
 package com.urlshortener.core.domain.shortener.dataTransferObject;
 
-public class ReferrerAnalyticDTO {
+public record ReferrerAnalyticDTO (
+        String referrer,
+        long totalClicksAndScans
+){
 }

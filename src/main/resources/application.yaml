@@ -17,3 +17,6 @@ spring:
       port: ${SPRING_REDIS_PORT:6379}
       password: Hop2005@
       timeout: 2000
+
+  kafka:
+    bootstrap-servers: 147.93.29.117:9092,147.93.29.117:9093

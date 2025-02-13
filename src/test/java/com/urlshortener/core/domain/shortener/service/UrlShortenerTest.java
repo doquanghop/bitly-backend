@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 class UrlShortenerTest {
     @Mock
-    private IUrlEncoder urlEncoder;
+    private UrlEncoderService urlEncoder;
     @Mock
     private UrlRepository urlRepository;
 

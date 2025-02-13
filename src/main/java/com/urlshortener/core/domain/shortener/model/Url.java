@@ -11,6 +11,8 @@ public class Url extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+    @Column(name = "user_id")
+    private String userId;
     @Column(name = "original_url")
     private String originalUrl;
     @Column(name = "short_url_code")

@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class UrlEncoderTest {
     @Autowired
-    private IUrlEncoder urlEncoder;
+    private UrlEncoderService urlEncoder;
 
     @Value("${url.short.max-size}")
     private int maxShortUrlSize;

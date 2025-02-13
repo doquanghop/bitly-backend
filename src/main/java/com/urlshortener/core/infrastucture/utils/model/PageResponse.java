@@ -1,4 +1,11 @@
 package com.urlshortener.core.infrastucture.utils.model;
 
-public class PageResponse {
+import lombok.Builder;
+import lombok.Data;
+
+@Data @Builder
+public class PageResponse<T> {
+    private int totalElements;
+    private int totalPages;
+    private T data;
 }
