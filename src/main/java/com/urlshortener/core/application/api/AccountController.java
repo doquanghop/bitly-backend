@@ -13,12 +13,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("${api.prefix}/account")
 @RequiredArgsConstructor
 public class AccountController {
     private final IAccountService authService;
+
     @GetMapping
     public String getAccounts() {
         return "hi hello";

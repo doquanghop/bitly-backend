@@ -37,6 +37,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> build() {
         return new ApiResponse<>();
     }
+
     public ApiResponse<T> withCode(int code) {
         this.code = code;
         return this;
@@ -61,6 +62,7 @@ public class ApiResponse<T> {
         this.errors = errors;
         return this;
     }
+
     public ResponseEntity<ApiResponse<T>> toEntity() {
         return ResponseEntity.status(httpStatus != null ? httpStatus : HttpStatus.OK)
                 .headers(headers != null ? headers : new HttpHeaders())

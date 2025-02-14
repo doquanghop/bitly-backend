@@ -1,16 +1,26 @@
 package com.urlshortener.core.domain.account.dataTransferObject.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.urlshortener.core.domain.account.dataTransferObject.TokenDTO;
+import com.urlshortener.core.domain.account.model.Account;
 
 import java.util.Date;
 
-@Data @AllArgsConstructor
-public class AccountResponse {
-    private String userId;
-    private String role;
-    private String accessToken;
-    private Date accessTokenExpiry;
-    private String refreshToken;
-    private Date refreshTokenExpiry;
+public record AccountResponse (
+         String userId,
+         String role,
+         String accessToken,
+         Date accessTokenExpiry,
+         String refreshToken,
+         Date refreshTokenExpiry
+){
+    public static AccountResponse from(Account account, TokenDTO tokenDTO) {
+        return new AccountResponse(
+                account.getId(),
+                account.getRole(),
+                tokenDTO.accessToken(),
+                tokenDTO.accessTokenExpiry(),
+                tokenDTO.refreshToken(),
+                tokenDTO.refreshTokenExpiry()
+        );
+    }
 }

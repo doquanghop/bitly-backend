@@ -2,17 +2,16 @@ package com.urlshortener.core.domain.account.service.impl;
 
 import com.urlshortener.core.domain.account.component.JwtTokenProvider;
 import com.urlshortener.core.domain.account.constant.RoleConstants;
-import com.urlshortener.core.domain.account.dataTransferObject.TokenDTO;
+import com.urlshortener.core.domain.account.dataTransferObject.AccessTokenDTO;
 import com.urlshortener.core.domain.account.dataTransferObject.TokenMetadataDTO;
 import com.urlshortener.core.domain.account.dataTransferObject.request.ChangePasswordRequest;
 import com.urlshortener.core.domain.account.dataTransferObject.request.LoginRequest;
 import com.urlshortener.core.domain.account.dataTransferObject.request.RefreshTokenRequest;
 import com.urlshortener.core.domain.account.dataTransferObject.request.RegisterRequest;
 import com.urlshortener.core.domain.account.dataTransferObject.response.AccountResponse;
-import com.urlshortener.core.domain.account.model.Token;
-import com.urlshortener.core.domain.account.model.User;
-import com.urlshortener.core.domain.account.repository.TokenRepository;
-import com.urlshortener.core.domain.account.repository.UserRepository;
+import com.urlshortener.core.domain.account.dataTransferObject.TokenDTO;
+import com.urlshortener.core.domain.account.model.Account;
+import com.urlshortener.core.domain.account.repository.AccountRepository;
 import com.urlshortener.core.infrastucture.exception.AppException;
 import com.urlshortener.core.infrastucture.security.UserDetail;
 import com.urlshortener.core.infrastucture.service.cache.CacheService;
@@ -52,11 +51,11 @@ class AuthServiceTest {
     private TokenRepository tokenRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
     @InjectMocks
     private AccountServiceImpl authService;
 
-    private TokenDTO tokenDTO;
+    private AccessTokenDTO accessTokenDTO;
 
     @BeforeEach
     void init() {
@@ -68,53 +67,53 @@ class AuthServiceTest {
     void testRegister_Success() {
         RegisterRequest request = new RegisterRequest("Test User", "test@example.com", "password");
 
-        when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
+        when(accountRepository.existsByEmail(request.getEmail())).thenReturn(false);
 
-        User user = new User("user-id", request.getFullName(), null, RoleConstants.roleUser, request.getEmail(), request.getPassword());
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        Account account = new Account("user-id", request.getFullName(), null, RoleConstants.roleUser, request.getEmail(), request.getPassword());
+        when(accountRepository.save(any(Account.class))).thenReturn(account);
 
         Date accessExpiry = new Date(System.currentTimeMillis() + 3600 * 1000);
-        tokenDTO = new TokenDTO("access-token", accessExpiry);
-        when(jwtTokenProvider.generateAccessToken(any(TokenMetadataDTO.class))).thenReturn(tokenDTO);
+        this.accessTokenDTO = new AccessTokenDTO("access-token", accessExpiry);
+        when(jwtTokenProvider.generateAccessToken(any(TokenMetadataDTO.class))).thenReturn(this.accessTokenDTO);
 
         Date refreshExpiry = new Date(System.currentTimeMillis() + 7200 * 1000);
-        Token token = new Token("user-id", user.getId(), "access-token", accessExpiry, "refresh-token", refreshExpiry);
-        when(tokenRepository.save(any(Token.class))).thenReturn(token);
+        TokenDTO tokenDTO = new TokenDTO( account.getId(), "access-token", accessExpiry, "refresh-token", refreshExpiry);
+        when(tokenRepository.save(any(TokenDTO.class))).thenReturn(tokenDTO);
 
         AccountResponse response = authService.register(request);
 
-        assertEquals(user.getId(), response.getUserId());
-        assertEquals(user.getRole(), response.getRole());
-        assertEquals("access-token", response.getAccessToken());
-        assertEquals(accessExpiry, response.getAccessTokenExpiry());
-        assertEquals("refresh-token", response.getRefreshToken());
-        assertEquals(refreshExpiry, response.getRefreshTokenExpiry());
+        assertEquals(account.getId(), response.userId());
+        assertEquals(account.getRole(), response.role());
+        assertEquals("access-token", response.accessToken());
+        assertEquals(accessExpiry, response.accessTokenExpiry());
+        assertEquals("refresh-token", response.refreshToken());
+        assertEquals(refreshExpiry, response.refreshTokenExpiry());
     }
 
     @Test
     void testLogin_Success() {
         LoginRequest request = new LoginRequest("test@example.com", "password");
 
-        User user = new User("user-id", "Test User", null, RoleConstants.roleUser, request.getEmail(), "encodedPassword");
-        when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(request.getPassword(), user.getPassword())).thenReturn(true);
+        Account account = new Account("user-id", "Test User", null, RoleConstants.roleUser, request.getEmail(), "encodedPassword");
+        when(accountRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(account));
+        when(passwordEncoder.matches(request.getPassword(), account.getPassword())).thenReturn(true);
 
         Date accessExpiry = new Date(System.currentTimeMillis() + 3600 * 1000);
-        tokenDTO = new TokenDTO("access-token", accessExpiry);
-        when(jwtTokenProvider.generateAccessToken(any(TokenMetadataDTO.class))).thenReturn(tokenDTO);
+        this.accessTokenDTO = new AccessTokenDTO("access-token", accessExpiry);
+        when(jwtTokenProvider.generateAccessToken(any(TokenMetadataDTO.class))).thenReturn(this.accessTokenDTO);
 
         Date refreshExpiry = new Date(System.currentTimeMillis() + 7200 * 1000);
-        Token token = new Token("token-id", user.getId(), "access-token", accessExpiry, "refresh-token", refreshExpiry);
-        when(tokenRepository.save(any(Token.class))).thenReturn(token);
+        TokenDTO tokenDTO = new TokenDTO( account.getId(), "access-token", accessExpiry, "refresh-token", refreshExpiry);
+        when(tokenRepository.save(any(TokenDTO.class))).thenReturn(tokenDTO);
 
         AccountResponse response = authService.login(request);
 
-        assertEquals(user.getId(), response.getUserId());
-        assertEquals(user.getRole(), response.getRole());
-        assertEquals("access-token", response.getAccessToken());
-        assertEquals(accessExpiry, response.getAccessTokenExpiry());
-        assertEquals("refresh-token", response.getRefreshToken());
-        assertEquals(refreshExpiry, response.getRefreshTokenExpiry());
+        assertEquals(account.getId(), response.userId());
+        assertEquals(account.getRole(), response.role());
+        assertEquals("access-token", response.accessToken());
+        assertEquals(accessExpiry, response.accessTokenExpiry());
+        assertEquals("refresh-token", response.refreshToken());
+        assertEquals(refreshExpiry, response.refreshTokenExpiry());
     }
 
     @Test
@@ -128,23 +127,23 @@ class AuthServiceTest {
         when(auth.isAuthenticated()).thenReturn(true);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        User user = new User("user-id", "Test User", null, RoleConstants.roleUser, "test@example.com", "encodedOldPassword");
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+        Account account = new Account("user-id", "Test User", null, RoleConstants.roleUser, "test@example.com", "encodedOldPassword");
+        when(accountRepository.findByEmail("test@example.com")).thenReturn(Optional.of(account));
         when(passwordEncoder.matches("oldPassword", "encodedOldPassword")).thenReturn(true);
 
         Date accessExpiry = new Date(System.currentTimeMillis() + 3600 * 1000);
-        tokenDTO = new TokenDTO("access-token", accessExpiry);
-        when(jwtTokenProvider.generateAccessToken(any(TokenMetadataDTO.class))).thenReturn(tokenDTO);
+        this.accessTokenDTO = new AccessTokenDTO("access-token", accessExpiry);
+        when(jwtTokenProvider.generateAccessToken(any(TokenMetadataDTO.class))).thenReturn(this.accessTokenDTO);
 
         Date refreshExpiry = new Date(System.currentTimeMillis() + 7200 * 1000);
-        Token token = new Token("token-id", user.getId(), "access-token", accessExpiry, "refresh-token", refreshExpiry);
-        when(tokenRepository.save(any(Token.class))).thenReturn(token);
+        TokenDTO tokenDTO = new TokenDTO( account.getId(), "access-token", accessExpiry, "refresh-token", refreshExpiry);
+        when(tokenRepository.save(any(TokenDTO.class))).thenReturn(tokenDTO);
 
         AccountResponse response = authService.changePassword(request);
 
-        verify(userRepository).save(user);
-        assertEquals(user.getId(), response.getUserId());
-        assertEquals("access-token", response.getAccessToken());
+        verify(accountRepository).save(account);
+        assertEquals(account.getId(), response.userId());
+        assertEquals("access-token", response.accessToken());
     }
 
     @Test
@@ -153,25 +152,25 @@ class AuthServiceTest {
         when(cacheService.isBlacklisted("access-token")).thenReturn(false);
 
         Date refreshExpiry = new Date(System.currentTimeMillis() + 3600 * 1000);
-        Token existingToken = new Token("token-id", "user-id", "access-token", new Date(System.currentTimeMillis() - 1000), "refresh-token", refreshExpiry);
-        when(tokenRepository.findByRefreshToken("refresh-token")).thenReturn(Optional.of(existingToken));
+        TokenDTO existingTokenDTO = new TokenDTO( "user-id", "access-token", new Date(System.currentTimeMillis() - 1000), "refresh-token", refreshExpiry);
+        when(tokenRepository.findByRefreshToken("refresh-token")).thenReturn(Optional.of(existingTokenDTO));
 
-        User user = new User("user-id", "Test User", null, RoleConstants.roleUser, "test@example.com", "encodedPassword");
-        when(userRepository.findById("user-id")).thenReturn(Optional.of(user));
+        Account account = new Account("user-id", "Test User", null, RoleConstants.roleUser, "test@example.com", "encodedPassword");
+        when(accountRepository.findById("user-id")).thenReturn(Optional.of(account));
 
         Date newAccessExpiry = new Date(System.currentTimeMillis() + 3600 * 1000);
-        tokenDTO = new TokenDTO("new-access-token", newAccessExpiry);
-        when(jwtTokenProvider.generateAccessToken(any(TokenMetadataDTO.class))).thenReturn(tokenDTO);
+        accessTokenDTO = new AccessTokenDTO("new-access-token", newAccessExpiry);
+        when(jwtTokenProvider.generateAccessToken(any(TokenMetadataDTO.class))).thenReturn(accessTokenDTO);
 
         Date newRefreshExpiry = new Date(System.currentTimeMillis() + 7200 * 1000);
-        Token newToken = new Token("token-id-2", user.getId(), "new-access-token", newAccessExpiry, "new-refresh-token", newRefreshExpiry);
-        when(tokenRepository.save(any(Token.class))).thenReturn(newToken);
+        TokenDTO newTokenDTO = new TokenDTO( account.getId(), "new-access-token", newAccessExpiry, "new-refresh-token", newRefreshExpiry);
+        when(tokenRepository.save(any(TokenDTO.class))).thenReturn(newTokenDTO);
 
         AccountResponse response = authService.refreshToken(request);
 
-        verify(tokenRepository).delete(existingToken);
-        assertEquals("new-access-token", response.getAccessToken());
-        assertEquals("new-refresh-token", response.getRefreshToken());
+        verify(tokenRepository).delete(existingTokenDTO);
+        assertEquals("new-access-token", response.accessToken());
+        assertEquals("new-refresh-token", response.refreshToken());
     }
 
     @Test
@@ -182,12 +181,12 @@ class AuthServiceTest {
         when(jwtTokenProvider.extractExpiration(accessToken)).thenReturn(expiry);
         when(cacheService.isBlacklisted(accessToken)).thenReturn(false);
 
-        Token token = new Token("token-id", "token-id", accessToken, expiry, "refresh-token", new Date(System.currentTimeMillis() + 7200 * 1000));
-        when(tokenRepository.findByAccessToken(accessToken)).thenReturn(Optional.of(token));
+        TokenDTO tokenDTO = new TokenDTO( "token-id", accessToken, expiry, "refresh-token", new Date(System.currentTimeMillis() + 7200 * 1000));
+        when(tokenRepository.findByAccessToken(accessToken)).thenReturn(Optional.of(tokenDTO));
 
         authService.logout(accessToken);
 
-        verify(tokenRepository).delete(token);
+        verify(tokenRepository).delete(tokenDTO);
         long ttl = TimeUtils.calculateRemainingTime(new Date(), expiry);
         verify(cacheService).addToBlacklist(accessToken, ttl);
     }
@@ -213,8 +212,8 @@ class AuthServiceTest {
         String userKey = String.format("user:%s", username);
         when(cacheService.get(userKey, UserDetail.class)).thenReturn(null);
 
-        User user = new User("user-id", "Test User", null, RoleConstants.roleUser, username, "encodedPassword");
-        when(userRepository.findByEmail(username)).thenReturn(Optional.of(user));
+        Account account = new Account("user-id", "Test User", null, RoleConstants.roleUser, username, "encodedPassword");
+        when(accountRepository.findByEmail(username)).thenReturn(Optional.of(account));
 
         doNothing().when(cacheService).put(eq(userKey), any(UserDetail.class));
 

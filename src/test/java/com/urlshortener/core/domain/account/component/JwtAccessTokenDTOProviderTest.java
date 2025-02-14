@@ -1,6 +1,6 @@
 package com.urlshortener.core.domain.account.component;
 
-import com.urlshortener.core.domain.account.dataTransferObject.TokenDTO;
+import com.urlshortener.core.domain.account.dataTransferObject.AccessTokenDTO;
 import com.urlshortener.core.domain.account.dataTransferObject.TokenMetadataDTO;
 import com.urlshortener.core.domain.account.exception.AuthException;
 import com.urlshortener.core.infrastucture.exception.AppException;
@@ -16,7 +16,7 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class JwtTokenProviderTest {
+class JwtAccessTokenDTOProviderTest {
     @InjectMocks
     private JwtTokenProvider jwtTokenProvider;
 
@@ -37,17 +37,17 @@ class JwtTokenProviderTest {
 
     @Test
     void testGenerateAccessToken_Success() {
-        TokenDTO tokenDTO = jwtTokenProvider.generateAccessToken(tokenMetadata);
+        AccessTokenDTO accessTokenDTO = jwtTokenProvider.generateAccessToken(tokenMetadata);
 
-        assertNotNull(tokenDTO);
-        assertNotNull(tokenDTO.getValue());
-        assertNotNull(tokenDTO.getExpiry());
+        assertNotNull(accessTokenDTO);
+        assertNotNull(accessTokenDTO.getValue());
+        assertNotNull(accessTokenDTO.getExpiry());
     }
 
     @Test
     void testValidateToken_Success() {
-        TokenDTO tokenDTO = jwtTokenProvider.generateAccessToken(tokenMetadata);
-        String token = tokenDTO.getValue();
+        AccessTokenDTO accessTokenDTO = jwtTokenProvider.generateAccessToken(tokenMetadata);
+        String token = accessTokenDTO.getValue();
 
         boolean isValid = jwtTokenProvider.verificationToken(token);
 
@@ -62,8 +62,8 @@ class JwtTokenProviderTest {
                 new Date(System.currentTimeMillis() - accessTokenExpiration * 1000 - 3600*1000)
         ); // Expired
 
-        TokenDTO expiredTokenDTO = jwtTokenProvider.generateAccessToken(expiredTokenMetadata);
-        String expiredToken = expiredTokenDTO.getValue();
+        AccessTokenDTO expiredAccessTokenDTO = jwtTokenProvider.generateAccessToken(expiredTokenMetadata);
+        String expiredToken = expiredAccessTokenDTO.getValue();
 
         AppException exception = assertThrows(AppException.class, () -> jwtTokenProvider.verificationToken(expiredToken));
         assertTrue(exception.getMessage().contains(AuthException.TOKEN_EXPIRED.getMessage()));
@@ -71,8 +71,8 @@ class JwtTokenProviderTest {
 
     @Test
     void testValidateToken_InvalidTokenSignature() {
-        TokenDTO tokenDTO = jwtTokenProvider.generateAccessToken(tokenMetadata);
-        String token = tokenDTO.getValue();
+        AccessTokenDTO accessTokenDTO = jwtTokenProvider.generateAccessToken(tokenMetadata);
+        String token = accessTokenDTO.getValue();
 
         String invalidToken = token + "123"; // Invalid token
 
@@ -82,8 +82,8 @@ class JwtTokenProviderTest {
 
     @Test
     void testValidateToken_VerificationFailed() {
-        TokenDTO tokenDTO = jwtTokenProvider.generateAccessToken(tokenMetadata);
-        String token = tokenDTO.getValue();
+        AccessTokenDTO accessTokenDTO = jwtTokenProvider.generateAccessToken(tokenMetadata);
+        String token = accessTokenDTO.getValue();
 
         AppException exception = assertThrows(AppException.class, () -> jwtTokenProvider.verificationToken("tamperedToken"));
         assertTrue(exception.getMessage().contains(AuthException.TOKEN_VERIFICATION_FAILED.getMessage()));

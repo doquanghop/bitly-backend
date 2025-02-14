@@ -12,6 +12,7 @@ public enum AuthException implements ExceptionCode {
     UNAUTHORIZED_ACCESS("AUTH003", 401, "Unauthorized access"),
     USER_NOT_FOUND("AUTH004", 404, "User not found"),
     TOKEN_VERIFICATION_FAILED("AUTH005", 403, "Token verification failed"),
+    REFRESH_TOKEN_VERIFICATION_FAILED("AUTH005", 403, "Refresh token verification failed"),
     TOKEN_SIGNATURE_INVALID("AUTH006", 403, "Token signature is invalid"),
     EMAIL_ALREADY_EXISTS("AUTH007", 409, "Email already exists"),
     REFRESH_TOKEN_EXPIRED("AUTH008", 403, "Refresh token has expired"),

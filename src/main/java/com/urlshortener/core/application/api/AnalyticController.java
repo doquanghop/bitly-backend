@@ -41,13 +41,14 @@ public class AnalyticController {
                 .toEntity();
     }
 
-    @GetMapping("/")
+    @GetMapping("/{urlId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<ApiResponse<AdminURLAnalyticsResponse>> getOverallAnalyticsSummary(
+    public ResponseEntity<ApiResponse<AdminURLAnalyticsResponse>> getOverallAnalyticsSummaryUrlId(
+            @PathVariable String urlId,
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate
     ){
-        var request = new GetAnalyticsSummaryRequest(null, startDate, endDate);
+        var request = new GetAnalyticsSummaryRequest(urlId, startDate, endDate);
         var response = urlAnalyticService.getOverallAnalytics(request);
         return ApiResponse.<AdminURLAnalyticsResponse>build()
                 .withData(response)

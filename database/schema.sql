@@ -1,11 +1,11 @@
 create table account_levels
 (
     id               varchar(45) primary key,
-    name             varchar(100)   not null, -- Basic, Premium, Pro, Enterprise
-    max_urls         int            not null, -- Số lượng URL tối đa mà user có thể tạo
-    max_storage_days int            not null, -- Số ngày lưu trữ URL
-    monthly_price    decimal(10, 2) not null, -- Giá tiền cho gói theo tháng
-    yearly_price     decimal(10, 2) not null, -- Giá tiền cho gói theo năm,
+    name             varchar(100)   not null,
+    max_urls         int            not null,
+    max_storage_days int            not null,
+    monthly_price    decimal(10, 2) not null,
+    yearly_price     decimal(10, 2) not null,
     created_at       timestamp,
     updated_at       timestamp
 );
@@ -20,28 +20,17 @@ create table users
     created_at timestamp,
     updated_at timestamp
 );
-create index idx_user_email ON users (email);
-CREATE TABLE user_subscriptions
+create index idx_user_email ON accounts (email);
+create table user_subscriptions
 (
     id               varchar(45) primary key,
-    user_id          varchar(45)                            not null,
-    account_level_id varchar(45)                            not null,
-    start_date       datetime                               not null,
-    end_date         datetime                               not null,
-    status           enum ('ACTIVE', 'EXPIRED', 'CANCELED') not null default 'ACTIVE',
+    user_id          varchar(45) not null,
+    account_level_id varchar(45) not null,
+    start_date       datetime    not null,
+    end_date         datetime    not null,
+    status           varchar(20),
     created_at       timestamp,
     updated_at       timestamp
-);
-create table user_tokens
-(
-    id                   varchar(45) primary key,
-    user_id              varchar(45),
-    access_token         varchar(100) unique not null,
-    access_token_expiry  datetime,
-    refresh_token        varchar(100) unique not null,
-    refresh_token_expiry datetime,
-    created_at           timestamp,
-    updated_at           timestamp
 );
 create table urls
 (

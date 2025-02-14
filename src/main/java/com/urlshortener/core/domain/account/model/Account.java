@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users")
+@Table(name = "accounts")
 @AllArgsConstructor @NoArgsConstructor @Getter @Setter
-public class User extends BaseEntity {
+public class Account extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;

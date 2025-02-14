@@ -12,8 +12,11 @@ import com.urlshortener.core.domain.analytic.dataTransferObject.response.URLAnal
 import com.urlshortener.core.domain.analytic.model.URLAnalytic;
 import com.urlshortener.core.domain.analytic.repository.URLAnalyticRepository;
 import com.urlshortener.core.domain.analytic.service.IURLAnalyticService;
+import com.urlshortener.core.domain.subscription.service.IAccountLevelService;
+import com.urlshortener.core.domain.subscription.service.IAccountSubscriptionService;
 import com.urlshortener.core.infrastucture.constant.DeviceTypeEnum;
 import com.urlshortener.core.infrastucture.constant.ReferrerTypeEnum;
+import com.urlshortener.core.infrastucture.exception.AppException;
 import com.urlshortener.core.infrastucture.service.cache.CacheService;
 import com.urlshortener.core.infrastucture.utils.RequestUtils;
 import com.urlshortener.core.infrastucture.utils.UserAgentParser;
@@ -31,6 +34,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class URLAnalyticServiceImpl implements IURLAnalyticService {
     private final IAccountService accountService;
+    private final IAccountLevelService accountLevelService;
+    private final IAccountSubscriptionService accountSubscriptionService;
     private final CacheService cacheService;
     private final URLAnalyticRepository urlAnalyticRepository;
 
@@ -40,7 +45,6 @@ public class URLAnalyticServiceImpl implements IURLAnalyticService {
 
     @Value("${url.analytics.device.top}")
     private int deviceAnalyticsTop;
-
     @Value("${url.analytics.referrer.top}")
     private int referrerAnalyticsTop;
 
@@ -48,9 +52,7 @@ public class URLAnalyticServiceImpl implements IURLAnalyticService {
     public boolean shouldLogView(String urlId, HttpServletRequest httpServletRequest) {
         String ipAddress = RequestUtils.getIpAddress(httpServletRequest);
         String cacheKeyRequest = String.format(VISITED_CACHE_KEY, urlId, ipAddress);
-        if (cacheService.exists(cacheKeyRequest)) {
-            return false;
-        }
+        if (cacheService.exists(cacheKeyRequest)) return false;
         cacheService.put(cacheKeyRequest, "visited", VISITED_CACHE_EXPIRATION_TIME);
         return true;
     }
@@ -75,6 +77,11 @@ public class URLAnalyticServiceImpl implements IURLAnalyticService {
 
     @Override
     public URLAnalyticsResponse getAnalyticsSummaryByUrlId(GetAnalyticsSummaryRequest request) {
+        var currentUser = accountService.getCurrentUser();
+        var accountSubscription = accountSubscriptionService.getSubscriptionByUserId(currentUser.getId());
+        if (accountSubscription == null) throw new AppException(null);
+        var accountLevel = accountLevelService.getAccountLevelById(accountSubscription.accountLevelId());
+
         long totalClicksAndScans = urlAnalyticRepository.countByUrlId(request.urlId());
         if (totalClicksAndScans == 0) return new URLAnalyticsResponse();
 
