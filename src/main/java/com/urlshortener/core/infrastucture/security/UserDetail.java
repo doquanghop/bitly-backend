@@ -20,9 +20,6 @@ public class UserDetail implements UserDetails {
     private String username;
     private String password;
 
-    public static String roleAdmin = "ADMIN";
-    public static String roleUser = "USER";
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
